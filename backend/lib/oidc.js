@@ -103,11 +103,29 @@ async function getAuthorizationUrl() {
 async function exchangeCode(code, code_verifier, redirect_uri) {
 	const client = await getOidcClient();
 	
-	const tokenSet = await client.callback(redirect_uri, { code }, {
-		code_verifier
-	});
-	
-	return tokenSet;
+	try {
+		// Try normal callback with validation
+		const tokenSet = await client.callback(redirect_uri, { code }, {
+			code_verifier
+		});
+		return tokenSet;
+	} catch (err) {
+		// If iss is missing from response params, try calling token endpoint directly
+		if (err.message && err.message.includes('iss missing')) {
+			logger.warn('iss missing from authorization response, attempting direct token exchange');
+			
+			// Manually exchange the code for tokens
+			const tokenSet = await client.grant({
+				grant_type: 'authorization_code',
+				code: code,
+				redirect_uri: redirect_uri,
+				code_verifier: code_verifier
+			});
+			
+			return tokenSet;
+		}
+		throw err;
+	}
 }
 
 /**
