@@ -42,7 +42,8 @@ const App = Mn.Application.extend({
         }
         
         // Exchange code for token
-        const redirectUri = window.location.origin + window.location.pathname;
+        // Use the redirect_uri that was used for authorization
+        const redirectUri = window.location.origin + '/login';
         
         Api.OIDC.callback({
             code: code,
