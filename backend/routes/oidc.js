@@ -107,6 +107,71 @@ router
 	});
 
 /**
+ * /api/oidc/test
+ */
+router
+	.route('/test')
+	.options((_, res) => {
+		res.sendStatus(204);
+	})
+
+	/**
+	 * POST /api/oidc/test
+	 * 
+	 * Test OIDC configuration without saving (admin only)
+	 */
+	.post(jwtdecode(), async (req, res, next) => {
+		try {
+			// Check admin permission
+			await res.locals.access.can('settings:update', 'oidc-config');
+
+			const testConfig = req.body;
+
+			// Validate required fields
+			if (!testConfig.issuer_url || !testConfig.client_id || !testConfig.client_secret) {
+				return res.status(400).send({
+					error: {
+						code: 400,
+						message: 'Missing required OIDC configuration fields for testing'
+					}
+				});
+			}
+
+			// Test the configuration by attempting discovery
+			const { Issuer } = require('openid-client');
+			
+			try {
+				const issuer = await Issuer.discover(testConfig.issuer_url);
+				
+				// Verify the client configuration
+				const client = new issuer.Client({
+					client_id: testConfig.client_id,
+					client_secret: testConfig.client_secret,
+					redirect_uris: [testConfig.redirect_uri],
+					response_types: ['code']
+				});
+
+				res.status(200).send({
+					success: true,
+					message: 'OIDC configuration is valid',
+					issuer: issuer.metadata.issuer,
+					authorization_endpoint: issuer.metadata.authorization_endpoint,
+					token_endpoint: issuer.metadata.token_endpoint
+				});
+			} catch (discoveryErr) {
+				return res.status(400).send({
+					error: {
+						code: 400,
+						message: 'Failed to discover OIDC issuer: ' + discoveryErr.message
+					}
+				});
+			}
+		} catch (err) {
+			next(err);
+		}
+	});
+
+/**
  * /api/oidc/authorize
  */
 router

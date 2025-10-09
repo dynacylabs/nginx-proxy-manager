@@ -68,12 +68,30 @@ module.exports = Mn.View.extend({
                 return;
             }
             
+            if (!this.ui.client_id.val()) {
+                alert('Please enter a Client ID first');
+                return;
+            }
+            
+            if (!this.ui.client_secret.val()) {
+                alert('Please enter a Client Secret first');
+                return;
+            }
+            
             this.ui.test.addClass('btn-loading').prop('disabled', true);
             
-            // Test OIDC configuration by trying to get authorization URL
-            App.Api.OIDC.authorize()
-                .then(() => {
-                    alert('OIDC configuration test successful! (Note: actual login was not performed)');
+            // Gather current form data for testing
+            const testData = {
+                issuer_url: this.ui.issuer_url.val(),
+                client_id: this.ui.client_id.val(),
+                client_secret: this.ui.client_secret.val(),
+                redirect_uri: this.ui.redirect_uri.val() || window.location.origin + '/login'
+            };
+            
+            // Test OIDC configuration
+            App.Api.OIDC.testConfig(testData)
+                .then(result => {
+                    alert('OIDC configuration test successful!\n\nIssuer: ' + result.issuer);
                 })
                 .catch(err => {
                     alert('OIDC configuration test failed: ' + err.message);

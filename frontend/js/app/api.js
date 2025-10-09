@@ -775,6 +775,15 @@ module.exports = {
         },
 
         /**
+         * Test OIDC configuration (admin only)
+         * @param   {Object}  config
+         * @returns {Promise}
+         */
+        testConfig: function (config) {
+            return fetch('post', 'oidc/test', config);
+        },
+
+        /**
          * Initiate OIDC authorization
          * @returns {Promise}
          */
