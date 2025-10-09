@@ -67,17 +67,27 @@ module.exports = Mn.View.extend({
         };
     },
     
+    initialize: function() {
+        this.oidcConfig = null;
+        this.oidcConfigLoaded = false;
+    },
+    
     onRender: function() {
-        // Load OIDC config
-        Api.OIDC.getConfig()
-            .then(config => {
-                this.oidcConfig = config;
-                if (config && config.enabled) {
-                    this.render();
-                }
-            })
-            .catch(() => {
-                // OIDC not available, continue with regular login
-            });
+        // Only load OIDC config once
+        if (!this.oidcConfigLoaded) {
+            this.oidcConfigLoaded = true;
+            
+            // Load OIDC config
+            Api.OIDC.getConfig()
+                .then(config => {
+                    this.oidcConfig = config;
+                    if (config && config.enabled) {
+                        this.render();
+                    }
+                })
+                .catch(() => {
+                    // OIDC not available, continue with regular login
+                });
+        }
     }
 });
