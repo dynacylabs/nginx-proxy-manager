@@ -15,7 +15,7 @@ COPY frontend/ ./
 RUN npm run build
 
 # Backend builder stage
-FROM node:18-alpine AS backend-builder
+FROM node:18-bookworm-slim AS backend-builder
 
 WORKDIR /build
 
