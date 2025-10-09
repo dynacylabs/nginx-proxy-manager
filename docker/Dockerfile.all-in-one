@@ -3,12 +3,15 @@ FROM node:18-alpine AS frontend-builder
 
 WORKDIR /build
 
+# Copy global directory first (needed by frontend build)
+COPY global/ ./global/
+
 # Copy frontend files
-COPY frontend/package.json frontend/package-lock.json* ./
+COPY frontend/package.json frontend/package-lock.json* ./frontend/
+WORKDIR /build/frontend
 RUN npm install --legacy-peer-deps
 
 COPY frontend/ ./
-COPY global/ /build/global/
 RUN npm run build
 
 # Backend builder stage
@@ -57,7 +60,7 @@ COPY --from=backend-builder /build/node_modules /app/node_modules
 COPY backend /app
 
 # Copy frontend from builder
-COPY --from=frontend-builder /build/dist /app/frontend
+COPY --from=frontend-builder /build/frontend/dist /app/frontend
 
 # Copy global files
 COPY global /app/global
