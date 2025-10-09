@@ -98,6 +98,44 @@ const setupDefaultSettings = () => {
 			if (config.debug()) {
 				logger.info('Default setting setup not required');
 			}
+		})
+		.then(() => {
+			// Check and create OIDC config setting
+			return settingModel
+				.query()
+				.select('id')
+				.where({id: 'oidc-config'})
+				.first();
+		})
+		.then((row) => {
+			if (!row || !row.id) {
+				return settingModel
+					.query()
+					.insert({
+						id:          'oidc-config',
+						name:        'OIDC Configuration',
+						description: 'OpenID Connect authentication settings',
+						value:       'disabled',
+						meta:        {
+							enabled: false,
+							provider_name: 'OIDC',
+							button_text: 'Sign in with OIDC',
+							issuer_url: '',
+							client_id: '',
+							client_secret: '',
+							redirect_uri: '',
+							scope: 'openid email profile',
+							auto_create_users: true,
+							default_role: 'user'
+						},
+					})
+					.then(() => {
+						logger.info('OIDC config setting added');
+					});
+			}
+			if (config.debug()) {
+				logger.info('OIDC config setting setup not required');
+			}
 		});
 };
 
