@@ -8,6 +8,7 @@ COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm install --legacy-peer-deps
 
 COPY frontend/ ./
+COPY global/ /build/global/
 RUN npm run build
 
 # Backend builder stage
