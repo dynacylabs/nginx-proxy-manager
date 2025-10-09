@@ -71,6 +71,9 @@ COPY global /app/global
 # Copy rootfs
 COPY docker/rootfs /
 
+# Remove dev.conf to avoid conflict with production.conf
+RUN rm -f /etc/nginx/conf.d/dev.conf
+
 WORKDIR /app
 
 # Health check
