@@ -15,6 +15,16 @@
                             </div>
                             <div class="col-sm-12 col-md-6">
                                 <div class="card-title"><%- i18n('login', 'title') %></div>
+                                <% if (oidcConfig && oidcConfig.enabled) { %>
+                                <div class="oidc-section mb-4">
+                                    <button type="button" class="btn btn-primary btn-block btn-oidc">
+                                        <i class="fe fe-log-in"></i> <%= oidcConfig.button_text || 'Sign in with OIDC' %>
+                                    </button>
+                                    <div class="text-center my-3">
+                                        <span class="text-muted"><%- i18n('str', 'or') %></span>
+                                    </div>
+                                </div>
+                                <% } %>
                                 <div class="form-group">
                                     <label class="form-label"><%- i18n('str', 'email-address') %></label>
                                     <input name="identity" type="email" class="form-control" placeholder="<%- i18n('str', 'email-address') %>" required autofocus>

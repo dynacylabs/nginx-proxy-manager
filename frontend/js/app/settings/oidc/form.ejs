@@ -1,0 +1,99 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">OIDC Configuration</h5>
+        <button type="button" class="close cancel" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="alert alert-info">
+                <p><strong>OpenID Connect (OIDC) Authentication</strong></p>
+                <p>Configure OIDC to allow users to authenticate using an external identity provider like Keycloak, Auth0, Okta, Google, etc.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="custom-switch">
+                    <input type="checkbox" name="enabled" class="custom-switch-input">
+                    <span class="custom-switch-indicator"></span>
+                    <span class="custom-switch-description">Enable OIDC Authentication</span>
+                </label>
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label class="form-label">Provider Name</label>
+                <input type="text" name="provider_name" class="form-control" placeholder="e.g., Keycloak, Auth0, Okta" value="OIDC">
+                <small class="form-text text-muted">Display name for your identity provider</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Button Text</label>
+                <input type="text" name="button_text" class="form-control" placeholder="e.g., Sign in with SSO" value="Sign in with OIDC">
+                <small class="form-text text-muted">Text shown on the login button</small>
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label class="form-label">Issuer URL <span class="text-danger">*</span></label>
+                <input type="url" name="issuer_url" class="form-control" placeholder="https://auth.example.com/realms/myrealm" value="<%= config.issuer_url || '' %>">
+                <small class="form-text text-muted">The OIDC provider's issuer URL (discovery endpoint)</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Client ID <span class="text-danger">*</span></label>
+                <input type="text" name="client_id" class="form-control" placeholder="nginx-proxy-manager" value="<%= config.client_id || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Client Secret <span class="text-danger">*</span></label>
+                <input type="password" name="client_secret" class="form-control" placeholder="your-client-secret" value="<%= config.client_secret || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Redirect URI <span class="text-danger">*</span></label>
+                <input type="url" name="redirect_uri" class="form-control" placeholder="https://npm.example.com/login" value="<%= config.redirect_uri || '' %>">
+                <small class="form-text text-muted">Where users will be redirected after authentication. Usually: <code><%= window.location.origin %>/login</code></small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Scope</label>
+                <input type="text" name="scope" class="form-control" placeholder="openid email profile" value="<%= config.scope || 'openid email profile' %>">
+                <small class="form-text text-muted">Space-separated list of OIDC scopes</small>
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label class="custom-switch">
+                    <input type="checkbox" name="auto_provision" class="custom-switch-input" checked>
+                    <span class="custom-switch-indicator"></span>
+                    <span class="custom-switch-description">Auto-provision new users</span>
+                </label>
+                <small class="form-text text-muted">Automatically create users on first OIDC login</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Default Role for New Users</label>
+                <select name="default_role" class="form-control">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <small class="form-text text-muted">Role assigned to auto-provisioned users</small>
+            </div>
+
+            <hr>
+
+            <div class="alert alert-warning">
+                <strong>Important:</strong> Make sure to configure your OIDC provider with the correct redirect URI and client credentials before enabling.
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary test">Test Configuration</button>
+        <button type="button" class="btn btn-secondary cancel">Cancel</button>
+        <button type="button" class="btn btn-success save">Save</button>
+    </div>
+</div>

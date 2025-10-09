@@ -427,7 +427,22 @@ module.exports = {
 				require(['./main', './settings/default-site/main'], function (App, View) {
 					App.UI.showModalDialog(new View({model: model}));
 				});
+			} else if (model.get('id') === 'oidc-config') {
+				require(['./main', './settings/oidc/form'], function (App, View) {
+					App.UI.showModalDialog(new View({model: model}));
+				});
 			}
+		}
+	},
+
+	/**
+	 * Show OIDC Configuration Form
+	 */
+	showOidcConfigForm: function () {
+		if (Cache.User.isAdmin()) {
+			require(['./main', './settings/oidc/form'], function (App, View) {
+				App.UI.showModalDialog(new View());
+			});
 		}
 	},
 

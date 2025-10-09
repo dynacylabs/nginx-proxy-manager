@@ -753,5 +753,42 @@ module.exports = {
             delete data.id;
             return fetch('put', 'settings/' + id, data);
         }
+    },
+
+    OIDC: {
+
+        /**
+         * Get OIDC configuration
+         * @returns {Promise}
+         */
+        getConfig: function () {
+            return fetch('get', 'oidc/config');
+        },
+
+        /**
+         * Update OIDC configuration (admin only)
+         * @param   {Object}  config
+         * @returns {Promise}
+         */
+        updateConfig: function (config) {
+            return fetch('put', 'oidc/config', config);
+        },
+
+        /**
+         * Initiate OIDC authorization
+         * @returns {Promise}
+         */
+        authorize: function () {
+            return fetch('get', 'oidc/authorize');
+        },
+
+        /**
+         * Handle OIDC callback
+         * @param   {Object}  data
+         * @returns {Promise}
+         */
+        callback: function (data) {
+            return fetch('post', 'oidc/callback', data);
+        }
     }
 };

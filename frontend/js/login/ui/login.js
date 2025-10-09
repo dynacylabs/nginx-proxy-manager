@@ -9,11 +9,13 @@ module.exports = Mn.View.extend({
     className: 'page-single',
 
     ui: {
-        form:     'form',
-        identity: 'input[name="identity"]',
-        secret:   'input[name="secret"]',
-        error:    '.secret-error',
-        button:   'button'
+        form:        'form',
+        identity:    'input[name="identity"]',
+        secret:      'input[name="secret"]',
+        error:       '.secret-error',
+        button:      'button[type="submit"]',
+        oidcButton:  '.btn-oidc',
+        oidcSection: '.oidc-section'
     },
 
     events: {
@@ -30,13 +32,52 @@ module.exports = Mn.View.extend({
                     this.ui.error.text(err.message).show();
                     this.ui.button.removeClass('btn-loading').prop('disabled', false);
                 });
+        },
+        
+        'click @ui.oidcButton': function (e) {
+            e.preventDefault();
+            this.ui.oidcButton.addClass('btn-loading').prop('disabled', true);
+            this.ui.error.hide();
+            
+            // Initiate OIDC flow
+            Api.OIDC.authorize()
+                .then(authData => {
+                    // Store session data
+                    sessionStorage.setItem('oidc_state', authData.state);
+                    sessionStorage.setItem('oidc_nonce', authData.nonce);
+                    sessionStorage.setItem('oidc_code_verifier', authData.code_verifier);
+                    
+                    // Redirect to OIDC provider
+                    window.location = authData.url;
+                })
+                .catch(err => {
+                    this.ui.error.text(err.message).show();
+                    this.ui.oidcButton.removeClass('btn-loading').prop('disabled', false);
+                });
         }
     },
 
-    templateContext: {
-        i18n:       i18n,
-        getVersion: function () {
-            return $('#login').data('version');
-        }
+    templateContext: function() {
+        return {
+            i18n: i18n,
+            getVersion: function () {
+                return $('#login').data('version');
+            },
+            oidcConfig: this.oidcConfig
+        };
+    },
+    
+    onRender: function() {
+        // Load OIDC config
+        Api.OIDC.getConfig()
+            .then(config => {
+                this.oidcConfig = config;
+                if (config && config.enabled) {
+                    this.render();
+                }
+            })
+            .catch(() => {
+                // OIDC not available, continue with regular login
+            });
     }
 });

@@ -12,6 +12,7 @@ Model.knex(db);
 const boolFields = [
 	'is_deleted',
 	'is_disabled',
+	'is_oidc',
 ];
 
 class User extends Model {
